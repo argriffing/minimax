@@ -1,25 +1,6 @@
 import itertools
 
-# the game state is:
-# * point advantage of current player
-# * monies of current player
-# * monies of enemy player
-# * remaining sequence
-# * current bid level
-
-# End state is when remaining sequence is empty.
-# The value of the end state is:
-# * 1 if the current player point advantage is positive
-# * 0 if the current player point advantage is zero
-# * -1 if the current player point advantage is negative
-
-# possible moves are:
-# * pass
-# * bid an integer greater than the current bid level
-#   and at most the monies of the current player
-
-# OR
-# I could look at the game as
+# Look at the game as
 # the point value of the game to the person whose turn it is.
 # In this case the board state is:
 # * monies of current player
@@ -27,11 +8,7 @@ import itertools
 # * remaining sequence
 # * current bid level
 # A move consists of updating the board state, possibly yielding score
-
-# Bid level:
-# -2: you have to pass and increment bid level to -1
-# -1: forfeit, or bid more than the bid level if possible
-# >=0: forfeit, or bid more than the bid level if possible
+# Bid level -1 means no bid has been placed.
 
 g_cache = {}
 
