@@ -1,7 +1,7 @@
+import unittest
 import itertools
 
-# Look at the game as
-# the point value of the game to the person whose turn it is.
+# Consider the point value of the game to the person whose turn it is.
 # In this case the board state is:
 # * monies of current player
 # * monies of enemy player
@@ -18,7 +18,7 @@ def evaluate(state):
         return 0
     if state in g_cache:
         return g_cache[state]
-    value = sum(seq) - min(gen_enemy_scores(state))
+    value = sum(seq) - min(sc for sc, st in gen_enemy_score_state_pairs(state))
     g_cache[state] = value
     return value
 
@@ -36,9 +36,9 @@ def gen_enemy_states(state):
     for mybid in range(bid+1, c_mon+1):
         yield 0, (e_mon, c_mon, seq, mybid)
 
-def gen_enemy_scores(state):
+def gen_enemy_score_state_pairs(state):
     for e_value, e_state in gen_enemy_states(state):
-        yield e_value + evaluate(e_state)
+        yield e_value + evaluate(e_state), e_state
 
 def backtrace(state):
     print state, 'is worth', evaluate(state), 'to the current player'
@@ -47,14 +47,10 @@ def backtrace(state):
         c_mon, e_mon, seq, bid = state
         if not seq:
             break
-        n_value_state_pairs = []
-        for inc, n_state in gen_enemy_states(state):
-            value = inc + evaluate(n_state)
-            n_value_state_pairs.append((value, n_state))
-        v, state = min(n_value_state_pairs)
+        v, state = min(gen_enemy_score_state_pairs(state))
 
 def seek_counterexample():
-    N = 10
+    N = 5
     tsum = (N*(N+1))/2
     if tsum % 2 == 0:
         raise ValueError('sum of all scores should be odd')
@@ -64,16 +60,12 @@ def seek_counterexample():
         seq = tuple([N] + list(remainder))
         state = (target, target, seq, -1)
         print state, 'is worth', evaluate(state), 'to the current player'
-        n_value_state_pairs = []
-        for inc, n_state in gen_enemy_states(state):
-            value = inc + evaluate(n_state)
-            n_value_state_pairs.append((value, n_state))
-        v, state = min(n_value_state_pairs)
+        v, state = min(gen_enemy_score_state_pairs(state))
         initial_bid = state[-1]
         print 'initial bid:', initial_bid
         print
 
-#seek_counterexample()
+seek_counterexample()
 
 state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), -1))
 print state, 'is worth', evaluate(state), 'to the current player'
@@ -91,8 +83,7 @@ state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 10))
 print state, 'is worth', evaluate(state), 'to the current player'
 
 
-#backtrace((8, 8, (5, 4, 3, 2, 1), -1))
-#print
+backtrace((8, 8, (5, 4, 3, 2, 1), -1))
 #backtrace((8, 8, (5, 2, 4, 3, 1), -1))
 
 #backtrace((8, 8, (5, 1, 2, 3, 4), -1))
@@ -100,4 +91,44 @@ print state, 'is worth', evaluate(state), 'to the current player'
 #print evaluate((8, 8, (5, 4, 3, 2, 1), -1))
 #print evaluate((8, 8, (5, 2, 4, 3, 1), -1))
 
-#print g_cache
+
+class MinimaxTest(unittest.TestCase):
+
+    def test_initial_win_a(self):
+        """
+        Check the expected gain.
+        """
+        observed = evaluate((8, 8, (5, 4, 3, 2, 1), -1))
+        self.assertEqual(8, observed)
+
+    def test_initial_win_b(self):
+        """
+        Check the expected gain.
+        """
+        observed = evaluate((8, 8, (5, 2, 4, 3, 1), -1))
+        self.assertEqual(8, observed)
+
+    def test_losing_state_a(self):
+        """
+        Assert a losing state.
+        """
+        observed = evaluate((8, 8, (5, 4, 3, 2, 1), 5))
+        self.assertEqual(7, observed)
+
+    def test_winning_state_a(self):
+        """
+        Check the expected gain.
+        """
+        observed = evaluate((8, 8, (5, 4, 3, 2, 1), 6))
+        self.assertEqual(9, observed)
+
+    def test_losing_state_b(self):
+        """
+        Check the expected gain.
+        """
+        observed = evaluate((8, 8, (5, 2, 4, 3, 1), 4))
+        self.assertEqual(7, observed)
+
+
+if __name__ == '__main__':
+    unittest.main()
