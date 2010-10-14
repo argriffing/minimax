@@ -55,14 +55,23 @@ class MinimaxTest(unittest.TestCase):
         self.assertEqual(8, observed)
 
     def test_losing_state_a(self):
+        """
+        An initial bid of 5 for 54321 puts the enemy in a losing position.
+        """
         observed = evaluate((8, 8, (5, 4, 3, 2, 1), 5))
         self.assertEqual(7, observed)
 
     def test_winning_state_a(self):
+        """
+        An initial bid of 6 for 54321 puts the enemy in a winning position.
+        """
         observed = evaluate((8, 8, (5, 4, 3, 2, 1), 6))
         self.assertEqual(9, observed)
 
     def test_losing_state_b(self):
+        """
+        An initial bid of 4 for 52431 puts the enemy in a losing position.
+        """
         observed = evaluate((8, 8, (5, 2, 4, 3, 1), 4))
         self.assertEqual(7, observed)
 
