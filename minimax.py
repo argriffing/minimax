@@ -65,69 +65,40 @@ def seek_counterexample():
         print 'initial bid:', initial_bid
         print
 
-seek_counterexample()
-
-state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), -1))
-print state, 'is worth', evaluate(state), 'to the current player'
-
-state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 7))
-print state, 'is worth', evaluate(state), 'to the current player'
-
-state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 8))
-print state, 'is worth', evaluate(state), 'to the current player'
-
-state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 9))
-print state, 'is worth', evaluate(state), 'to the current player'
-
-state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 10))
-print state, 'is worth', evaluate(state), 'to the current player'
-
-
-backtrace((8, 8, (5, 4, 3, 2, 1), -1))
-#backtrace((8, 8, (5, 2, 4, 3, 1), -1))
-
-#backtrace((8, 8, (5, 1, 2, 3, 4), -1))
-
-#print evaluate((8, 8, (5, 4, 3, 2, 1), -1))
-#print evaluate((8, 8, (5, 2, 4, 3, 1), -1))
-
 
 class MinimaxTest(unittest.TestCase):
 
     def test_initial_win_a(self):
-        """
-        Check the expected gain.
-        """
         observed = evaluate((8, 8, (5, 4, 3, 2, 1), -1))
         self.assertEqual(8, observed)
 
     def test_initial_win_b(self):
-        """
-        Check the expected gain.
-        """
         observed = evaluate((8, 8, (5, 2, 4, 3, 1), -1))
         self.assertEqual(8, observed)
 
     def test_losing_state_a(self):
-        """
-        Assert a losing state.
-        """
         observed = evaluate((8, 8, (5, 4, 3, 2, 1), 5))
         self.assertEqual(7, observed)
 
     def test_winning_state_a(self):
-        """
-        Check the expected gain.
-        """
         observed = evaluate((8, 8, (5, 4, 3, 2, 1), 6))
         self.assertEqual(9, observed)
 
     def test_losing_state_b(self):
-        """
-        Check the expected gain.
-        """
         observed = evaluate((8, 8, (5, 2, 4, 3, 1), 4))
         self.assertEqual(7, observed)
+
+    def test_counterexample(self):
+        state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), -1))
+        self.assertEqual(28, evaluate(state))
+        state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 7))
+        self.assertEqual(28, evaluate(state))
+        state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 8))
+        self.assertEqual(27, evaluate(state))
+        state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 9))
+        self.assertEqual(28, evaluate(state))
+        state = ((28, 28, (10, 1, 2, 3, 4, 5, 6, 7, 8, 9), 10))
+        self.assertEqual(29, evaluate(state))
 
 
 if __name__ == '__main__':
