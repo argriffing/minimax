@@ -13,6 +13,9 @@ import itertools
 g_cache = {}
 
 def evaluate(state):
+    """
+    @return: the value of the state to the current player
+    """
     c_mon, e_mon, seq, bid = state
     if not seq:
         return 0
@@ -22,9 +25,9 @@ def evaluate(state):
     g_cache[state] = value
     return value
 
-def gen_enemy_states(state):
+def gen_enemy_incr_state_pairs(state):
     """
-    Yield (cost, next_state).
+    Yield (incremental_cost, next_state).
     The yielded cost is given to the enemy immediately.
     The next state is from the point of view of the enemy.
     @param state: the state for the current player
@@ -37,33 +40,8 @@ def gen_enemy_states(state):
         yield 0, (e_mon, c_mon, seq, mybid)
 
 def gen_enemy_score_state_pairs(state):
-    for e_value, e_state in gen_enemy_states(state):
-        yield e_value + evaluate(e_state), e_state
-
-def backtrace(state):
-    print state, 'is worth', evaluate(state), 'to the current player'
-    while True:
-        print state
-        c_mon, e_mon, seq, bid = state
-        if not seq:
-            break
-        v, state = min(gen_enemy_score_state_pairs(state))
-
-def seek_counterexample():
-    N = 5
-    tsum = (N*(N+1))/2
-    if tsum % 2 == 0:
-        raise ValueError('sum of all scores should be odd')
-    target = tsum - tsum/2
-    print 'required score to win:', target
-    for remainder in itertools.permutations(range(1,N)):
-        seq = tuple([N] + list(remainder))
-        state = (target, target, seq, -1)
-        print state, 'is worth', evaluate(state), 'to the current player'
-        v, state = min(gen_enemy_score_state_pairs(state))
-        initial_bid = state[-1]
-        print 'initial bid:', initial_bid
-        print
+    for incr, e_state in gen_enemy_incr_state_pairs(state):
+        yield incr + evaluate(e_state), e_state
 
 
 class MinimaxTest(unittest.TestCase):
