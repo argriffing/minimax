@@ -3,12 +3,12 @@ import itertools
 
 # Consider the point value of the game to the person whose turn it is.
 # In this case the board state is:
-# * monies of current player
-# * monies of enemy player
+# * remaining money of current player
+# * remaining money of enemy player
 # * remaining sequence
 # * current bid level
-# A move consists of updating the board state, possibly yielding score
 # Bid level -1 means no bid has been placed.
+# A move consists of either bidding or forfeiting the next number.
 
 g_cache = {}
 
@@ -28,7 +28,7 @@ def evaluate(state):
 def gen_enemy_incr_state_pairs(state):
     """
     Yield (incremental_cost, next_state).
-    The yielded cost is given to the enemy immediately.
+    The incremental cost will be given to the enemy.
     The next state is from the point of view of the enemy.
     @param state: the state for the current player
     """
